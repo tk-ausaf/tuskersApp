@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuskers App - Player Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        #addPlayerBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        #addPlayerBtn:hover {
+            background-color: #45a049;
+        }
+        #getPlayersBtn {
+            background-color: #2196F3;
+            color: white;
+        }
+        #getPlayersBtn:hover {
+            background-color: #0b7dda;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .response.success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .response.error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .input-group {
+            margin: 20px 0;
+            display: none;
+        }
+        .input-group.show {
+            display: block;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .input-group button {
+            margin-top: 10px;
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tuskers App - Player Management</h1>
+        
+        <div class="button-group">
+            <button id="addPlayerBtn">Add Player</button>
+            <button id="getPlayersBtn">Get Players</button>
+        </div>
+
+        <div class="input-group" id="addPlayerForm">
+            <h3>Add New Player</h3>
+            <input type="number" id="playerId" placeholder="Player ID">
+            <input type="text" id="playerName" placeholder="Player Name">
+            <button onclick="submitAddPlayer()">Submit</button>
+            <button onclick="hideAddPlayerForm()" style="background-color: #6c757d; margin-left: 10px;">Cancel</button>
+        </div>
+
+        <div class="response" id="response"></div>
+    </div>
+
+    <script>
+        const responseDiv = document.getElementById('response');
+        const addPlayerForm = document.getElementById('addPlayerForm');
+
+        document.getElementById('addPlayerBtn').addEventListener('click', function() {
+            addPlayerForm.classList.add('show');
+            responseDiv.textContent = '';
+            responseDiv.className = 'response';
+        });
+
+        document.getElementById('getPlayersBtn').addEventListener('click', getPlayers);
+
+        function hideAddPlayerForm() {
+            addPlayerForm.classList.remove('show');
+        }
+
+        function submitAddPlayer() {
+            const id = document.getElementById('playerId').value;
+            const name = document.getElementById('playerName').value;
+
+            if (!id || !name) {
+                showResponse('Please fill in both ID and Name fields', 'error');
+                return;
+            }
+
+            const player = {
+                id: parseInt(id),
+                name: name
+            };
+
+            fetch('/players/addPlayer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(player)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showResponse('Player added successfully: ' + JSON.stringify(data, null, 2), 'success');
+                hideAddPlayerForm();
+                document.getElementById('playerId').value = '';
+                document.getElementById('playerName').value = '';
+            })
+            .catch(error => {
+                showResponse('Error adding player: ' + error.message, 'error');
+            });
+        }
+
+        function getPlayers() {
+            addPlayerForm.classList.remove('show');
+            
+            fetch('/players')
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    showResponse('No players found in database', 'success');
+                } else {
+                    showResponse('Players retrieved successfully:\n' + JSON.stringify(data, null, 2), 'success');
+                }
+            })
+            .catch(error => {
+                showResponse('Error getting players: ' + error.message, 'error');
+            });
+        }
+
+        function showResponse(message, type) {
+            responseDiv.textContent = message;
+            responseDiv.className = 'response ' + type;
+        }
+    </script>
+</body>
+</html>
