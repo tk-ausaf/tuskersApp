@@ -14,11 +14,6 @@ public class PlayersController {
     @Autowired
     private PlayerService playerService;
 
-    @GetMapping("abc")
-    public String abc() {
-        return "abc";
-    }
-
     @GetMapping
     public List<Player> getAllPlayers() {
         return playerService.getAllPlayers();
