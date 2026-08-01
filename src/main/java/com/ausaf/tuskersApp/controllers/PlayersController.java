@@ -25,7 +25,10 @@ public class PlayersController {
     }
 
     @PostMapping("signIn")
-    public Boolean signIn(@RequestBody Player player) {
-        return playerService.authenticatePlayer(player.getName(), player.getPassword());
+    public String signIn(@RequestBody Player player) {
+        if (playerService.authenticatePlayer(player.getName(), player.getPassword())) {
+            return playerService.generateToken(player.getName());
+        }
+        return null;
     }
 }

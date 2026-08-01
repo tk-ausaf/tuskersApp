@@ -132,6 +132,7 @@
         const responseDiv = document.getElementById('response');
         const addPlayerForm = document.getElementById('addPlayerForm');
         const signInForm = document.getElementById('signInForm');
+        let jwtToken = localStorage.getItem('jwtToken');
 
         document.getElementById('addPlayerBtn').addEventListener('click', function() {
             addPlayerForm.classList.add('show');
@@ -197,8 +198,24 @@
             addPlayerForm.classList.remove('show');
             signInForm.classList.remove('show');
             
-            fetch('/players')
-            .then(response => response.json())
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (jwtToken) {
+                headers['Authorization'] = 'Bearer ' + jwtToken;
+            }
+            
+            fetch('/players', {
+                method: 'GET',
+                headers: headers
+            })
+            .then(response => {
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Authentication required. Please sign in first.');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.length === 0) {
                     showResponse('No players found in database', 'success');
@@ -232,10 +249,17 @@
                 },
                 body: JSON.stringify(player)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Invalid credentials');
+                }
+                return response.text();
+            })
             .then(data => {
                 if (data) {
-                    showResponse('Sign in successful! Welcome ' + name, 'success');
+                    jwtToken = data;
+                    localStorage.setItem('jwtToken', jwtToken);
+                    showResponse('Sign in successful! Welcome ' + name + '\nToken stored.', 'success');
                 } else {
                     showResponse('Sign in failed. Invalid name or password.', 'error');
                 }

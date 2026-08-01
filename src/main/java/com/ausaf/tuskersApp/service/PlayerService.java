@@ -2,6 +2,7 @@ package com.ausaf.tuskersApp.service;
 
 import com.ausaf.tuskersApp.entity.Player;
 import com.ausaf.tuskersApp.repository.player.PlayerRepository;
+import com.ausaf.tuskersApp.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,9 @@ public class PlayerService {
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -33,6 +37,10 @@ public class PlayerService {
             return false;
         }
         return passwordEncoder.matches(password, player.getPassword());
+    }
+
+    public String generateToken(String name) {
+        return jwtUtil.generateToken(name);
     }
 
 }
