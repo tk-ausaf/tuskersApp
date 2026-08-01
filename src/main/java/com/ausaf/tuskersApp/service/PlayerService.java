@@ -27,4 +27,12 @@ public class PlayerService {
         return playerRepository.findAll();
     }
 
+    public boolean authenticatePlayer(String name, String password) {
+        Player player = playerRepository.findByName(name);
+        if (player == null) {
+            return false;
+        }
+        return passwordEncoder.matches(password, player.getPassword());
+    }
+
 }

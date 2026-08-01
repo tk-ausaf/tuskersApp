@@ -50,6 +50,13 @@
         #getPlayersBtn:hover {
             background-color: #0b7dda;
         }
+        #signInBtn {
+            background-color: #FF9800;
+            color: white;
+        }
+        #signInBtn:hover {
+            background-color: #e68900;
+        }
         .response {
             margin-top: 20px;
             padding: 15px;
@@ -97,6 +104,7 @@
         
         <div class="button-group">
             <button id="addPlayerBtn">Add Player</button>
+            <button id="signInBtn">Sign In</button>
             <button id="getPlayersBtn">Get Players</button>
         </div>
 
@@ -109,15 +117,32 @@
             <button onclick="hideAddPlayerForm()" style="background-color: #6c757d; margin-left: 10px;">Cancel</button>
         </div>
 
+        <div class="input-group" id="signInForm">
+            <h3>Sign In</h3>
+            <input type="text" id="signInName" placeholder="Player Name">
+            <input type="password" id="signInPassword" placeholder="Password">
+            <button onclick="submitSignIn()">Sign In</button>
+            <button onclick="hideSignInForm()" style="background-color: #6c757d; margin-left: 10px;">Cancel</button>
+        </div>
+
         <div class="response" id="response"></div>
     </div>
 
     <script>
         const responseDiv = document.getElementById('response');
         const addPlayerForm = document.getElementById('addPlayerForm');
+        const signInForm = document.getElementById('signInForm');
 
         document.getElementById('addPlayerBtn').addEventListener('click', function() {
             addPlayerForm.classList.add('show');
+            signInForm.classList.remove('show');
+            responseDiv.textContent = '';
+            responseDiv.className = 'response';
+        });
+
+        document.getElementById('signInBtn').addEventListener('click', function() {
+            signInForm.classList.add('show');
+            addPlayerForm.classList.remove('show');
             responseDiv.textContent = '';
             responseDiv.className = 'response';
         });
@@ -126,6 +151,10 @@
 
         function hideAddPlayerForm() {
             addPlayerForm.classList.remove('show');
+        }
+
+        function hideSignInForm() {
+            signInForm.classList.remove('show');
         }
 
         function submitAddPlayer() {
@@ -166,6 +195,7 @@
 
         function getPlayers() {
             addPlayerForm.classList.remove('show');
+            signInForm.classList.remove('show');
             
             fetch('/players')
             .then(response => response.json())
@@ -178,6 +208,43 @@
             })
             .catch(error => {
                 showResponse('Error getting players: ' + error.message, 'error');
+            });
+        }
+
+        function submitSignIn() {
+            const name = document.getElementById('signInName').value;
+            const password = document.getElementById('signInPassword').value;
+
+            if (!name || !password) {
+                showResponse('Please fill in both Name and Password fields', 'error');
+                return;
+            }
+
+            const player = {
+                name: name,
+                password: password
+            };
+
+            fetch('/players/signIn', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(player)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    showResponse('Sign in successful! Welcome ' + name, 'success');
+                } else {
+                    showResponse('Sign in failed. Invalid name or password.', 'error');
+                }
+                hideSignInForm();
+                document.getElementById('signInName').value = '';
+                document.getElementById('signInPassword').value = '';
+            })
+            .catch(error => {
+                showResponse('Error signing in: ' + error.message, 'error');
             });
         }
 
