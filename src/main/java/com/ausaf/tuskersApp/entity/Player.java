@@ -15,10 +15,12 @@ public class Player {
     @Id
     Integer id;
     String name;
+    String password;
 
-    public Player(int id, String stName) {
+    public Player(int id, String stName, String password) {
         this.id = id;
         this.name = stName;
+        this.password = password;
     }
 
 }

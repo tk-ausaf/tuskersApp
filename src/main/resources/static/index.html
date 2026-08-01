@@ -104,6 +104,7 @@
             <h3>Add New Player</h3>
             <input type="number" id="playerId" placeholder="Player ID">
             <input type="text" id="playerName" placeholder="Player Name">
+            <input type="password" id="playerPassword" placeholder="Password">
             <button onclick="submitAddPlayer()">Submit</button>
             <button onclick="hideAddPlayerForm()" style="background-color: #6c757d; margin-left: 10px;">Cancel</button>
         </div>
@@ -130,15 +131,17 @@
         function submitAddPlayer() {
             const id = document.getElementById('playerId').value;
             const name = document.getElementById('playerName').value;
+            const password = document.getElementById('playerPassword').value;
 
-            if (!id || !name) {
-                showResponse('Please fill in both ID and Name fields', 'error');
+            if (!id || !name || !password) {
+                showResponse('Please fill in ID, Name, and Password fields', 'error');
                 return;
             }
 
             const player = {
                 id: parseInt(id),
-                name: name
+                name: name,
+                password: password
             };
 
             fetch('/players/addPlayer', {
@@ -154,6 +157,7 @@
                 hideAddPlayerForm();
                 document.getElementById('playerId').value = '';
                 document.getElementById('playerName').value = '';
+                document.getElementById('playerPassword').value = '';
             })
             .catch(error => {
                 showResponse('Error adding player: ' + error.message, 'error');
