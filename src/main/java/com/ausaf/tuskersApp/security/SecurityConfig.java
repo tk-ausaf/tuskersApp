@@ -22,10 +22,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/players/addPlayer").permitAll()
-                .requestMatchers("/players/signIn").permitAll()
+                .requestMatchers("/users/addUser").permitAll()
+                .requestMatchers("/users/signIn").permitAll()
                 .requestMatchers("/", "/index.html", "/static/**").permitAll()
-                .requestMatchers("/players").authenticated()
+                .requestMatchers("/users").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tuskers App - Player Management</title>
+    <title>Tuskers App - User Management</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,18 +36,18 @@
             border-radius: 4px;
             transition: background-color 0.3s;
         }
-        #addPlayerBtn {
+        #addUserBtn {
             background-color: #4CAF50;
             color: white;
         }
-        #addPlayerBtn:hover {
+        #addUserBtn:hover {
             background-color: #45a049;
         }
-        #getPlayersBtn {
+        #getUsersBtn {
             background-color: #2196F3;
             color: white;
         }
-        #getPlayersBtn:hover {
+        #getUsersBtn:hover {
             background-color: #0b7dda;
         }
         #signInBtn {
@@ -100,26 +100,26 @@
 </head>
 <body>
     <div class="container">
-        <h1>Tuskers App - Player Management</h1>
+        <h1>Tuskers App - User Management</h1>
         
         <div class="button-group">
-            <button id="addPlayerBtn">Add Player</button>
+            <button id="addUserBtn">Add User</button>
             <button id="signInBtn">Sign In</button>
-            <button id="getPlayersBtn">Get Players</button>
+            <button id="getUsersBtn">Get Users</button>
         </div>
 
-        <div class="input-group" id="addPlayerForm">
-            <h3>Add New Player</h3>
-            <input type="number" id="playerId" placeholder="Player ID">
-            <input type="text" id="playerName" placeholder="Player Name">
-            <input type="password" id="playerPassword" placeholder="Password">
-            <button onclick="submitAddPlayer()">Submit</button>
-            <button onclick="hideAddPlayerForm()" style="background-color: #6c757d; margin-left: 10px;">Cancel</button>
+        <div class="input-group" id="addUserForm">
+            <h3>Add New User</h3>
+            <input type="number" id="userId" placeholder="User ID">
+            <input type="text" id="userName" placeholder="User Name">
+            <input type="password" id="userPassword" placeholder="Password">
+            <button onclick="submitAddUser()">Submit</button>
+            <button onclick="hideAddUserForm()" style="background-color: #6c757d; margin-left: 10px;">Cancel</button>
         </div>
 
         <div class="input-group" id="signInForm">
             <h3>Sign In</h3>
-            <input type="text" id="signInName" placeholder="Player Name">
+            <input type="text" id="signInName" placeholder="User Name">
             <input type="password" id="signInPassword" placeholder="Password">
             <button onclick="submitSignIn()">Sign In</button>
             <button onclick="hideSignInForm()" style="background-color: #6c757d; margin-left: 10px;">Cancel</button>
@@ -130,12 +130,12 @@
 
     <script>
         const responseDiv = document.getElementById('response');
-        const addPlayerForm = document.getElementById('addPlayerForm');
+        const addUserForm = document.getElementById('addUserForm');
         const signInForm = document.getElementById('signInForm');
         let jwtToken = localStorage.getItem('jwtToken');
 
-        document.getElementById('addPlayerBtn').addEventListener('click', function() {
-            addPlayerForm.classList.add('show');
+        document.getElementById('addUserBtn').addEventListener('click', function() {
+            addUserForm.classList.add('show');
             signInForm.classList.remove('show');
             responseDiv.textContent = '';
             responseDiv.className = 'response';
@@ -143,59 +143,59 @@
 
         document.getElementById('signInBtn').addEventListener('click', function() {
             signInForm.classList.add('show');
-            addPlayerForm.classList.remove('show');
+            addUserForm.classList.remove('show');
             responseDiv.textContent = '';
             responseDiv.className = 'response';
         });
 
-        document.getElementById('getPlayersBtn').addEventListener('click', getPlayers);
+        document.getElementById('getUsersBtn').addEventListener('click', getUsers);
 
-        function hideAddPlayerForm() {
-            addPlayerForm.classList.remove('show');
+        function hideAddUserForm() {
+            addUserForm.classList.remove('show');
         }
 
         function hideSignInForm() {
             signInForm.classList.remove('show');
         }
 
-        function submitAddPlayer() {
-            const id = document.getElementById('playerId').value;
-            const name = document.getElementById('playerName').value;
-            const password = document.getElementById('playerPassword').value;
+        function submitAddUser() {
+            const id = document.getElementById('userId').value;
+            const name = document.getElementById('userName').value;
+            const password = document.getElementById('userPassword').value;
 
             if (!id || !name || !password) {
                 showResponse('Please fill in ID, Name, and Password fields', 'error');
                 return;
             }
 
-            const player = {
+            const user = {
                 id: parseInt(id),
                 name: name,
                 password: password
             };
 
-            fetch('/players/addPlayer', {
+            fetch('/users/addUser', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(player)
+                body: JSON.stringify(user)
             })
             .then(response => response.json())
             .then(data => {
-                showResponse('Player added successfully: ' + JSON.stringify(data, null, 2), 'success');
-                hideAddPlayerForm();
-                document.getElementById('playerId').value = '';
-                document.getElementById('playerName').value = '';
-                document.getElementById('playerPassword').value = '';
+                showResponse('User added successfully: ' + JSON.stringify(data, null, 2), 'success');
+                hideAddUserForm();
+                document.getElementById('userId').value = '';
+                document.getElementById('userName').value = '';
+                document.getElementById('userPassword').value = '';
             })
             .catch(error => {
-                showResponse('Error adding player: ' + error.message, 'error');
+                showResponse('Error adding user: ' + error.message, 'error');
             });
         }
 
-        function getPlayers() {
-            addPlayerForm.classList.remove('show');
+        function getUsers() {
+            addUserForm.classList.remove('show');
             signInForm.classList.remove('show');
             
             const headers = {
@@ -206,7 +206,7 @@
                 headers['Authorization'] = 'Bearer ' + jwtToken;
             }
             
-            fetch('/players', {
+            fetch('/users', {
                 method: 'GET',
                 headers: headers
             })
@@ -218,13 +218,13 @@
             })
             .then(data => {
                 if (data.length === 0) {
-                    showResponse('No players found in database', 'success');
+                    showResponse('No users found in database', 'success');
                 } else {
-                    showResponse('Players retrieved successfully:\n' + JSON.stringify(data, null, 2), 'success');
+                    showResponse('Users retrieved successfully:\n' + JSON.stringify(data, null, 2), 'success');
                 }
             })
             .catch(error => {
-                showResponse('Error getting players: ' + error.message, 'error');
+                showResponse('Error getting users: ' + error.message, 'error');
             });
         }
 
@@ -237,17 +237,17 @@
                 return;
             }
 
-            const player = {
+            const user = {
                 name: name,
                 password: password
             };
 
-            fetch('/players/signIn', {
+            fetch('/users/signIn', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(player)
+                body: JSON.stringify(user)
             })
             .then(response => {
                 if (response.status === 401 || response.status === 403) {
