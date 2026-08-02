@@ -3,6 +3,7 @@ package com.ausaf.tuskersApp.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,6 +26,8 @@ public class SecurityConfig {
                 .requestMatchers("/users/addUser").permitAll()
                 .requestMatchers("/users/signIn").permitAll()
                 .requestMatchers("/", "/index.html", "/static/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/notifications").permitAll()
+                .requestMatchers(HttpMethod.POST, "/notifications").authenticated()
                 .requestMatchers("/users").authenticated()
                 .anyRequest().authenticated()
             )
