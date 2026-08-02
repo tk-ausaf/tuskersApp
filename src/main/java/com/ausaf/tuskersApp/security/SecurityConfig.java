@@ -27,10 +27,11 @@ public class SecurityConfig {
                 .requestMatchers("/users/signIn").permitAll()
                 .requestMatchers("/", "/index.html", "/static/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/notifications").permitAll()
-                .requestMatchers(HttpMethod.POST, "/notifications").authenticated()
+                .requestMatchers(HttpMethod.POST, "/notifications").permitAll()
+                .requestMatchers(HttpMethod.POST, "/notifications/**").permitAll()
                 .requestMatchers("/users").authenticated()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

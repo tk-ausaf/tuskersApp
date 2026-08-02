@@ -17,6 +17,7 @@ public class Notification {
     private String title;
     private LocalDateTime date;
     private String content;
+    private String imageUrl;
 
     public Notification(String title, String content) {
         this.title = title;
